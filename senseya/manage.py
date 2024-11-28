@@ -21,14 +21,14 @@ def main():
 if __name__ == '__main__':
     main()
 
-import jwt
-from django.conf import settings
-
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImVtYWlsIjoibWFkaW51ckBnbWFpbC5jb20iLCJleHAiOjE3MzI4MTA5NDYsImlhdCI6MTczMjgwNzM0Nn0.USTqRVpHLVhM4oGWaPxSxERiuTLBH4Xottnqw11O-Ns"
-try:
-    payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-    print("Decoded payload:", payload)
-except jwt.ExpiredSignatureError:
-    print("Token has expired!")
-except jwt.DecodeError:
-    print("Invalid token!")
+# import jwt
+# from django.conf import settings
+#
+# token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTEsImVtYWlsIjoibWFkaW51ckBnbWFpbC5jb20iLCJleHAiOjE3MzI4MTA5NDYsImlhdCI6MTczMjgwNzM0Nn0.USTqRVpHLVhM4oGWaPxSxERiuTLBH4Xottnqw11O-Ns"
+# try:
+#     payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+#     print("Decoded payload:", payload)
+# except jwt.ExpiredSignatureError:
+#     print("Token has expired!")
+# except jwt.DecodeError:
+#     print("Invalid token!")

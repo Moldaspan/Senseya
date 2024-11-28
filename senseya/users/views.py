@@ -81,12 +81,19 @@ class LoginView(APIView):
 
 
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return Response({'error': 'Token is missing or invalid.'}, status=401)
 
+        token = auth_header.split(' ')[1]
+
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        user_id = payload.get('id')
+
+        return Response({'message': 'Token decoded successfully.', 'user_id': 1})
 
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
@@ -144,7 +151,7 @@ class ResetPasswordView(APIView):
             return Response({'message': 'Invalid token.'}, status=400)
 
 
-class GoogleSignInView(APIView):
+class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -153,28 +160,26 @@ class GoogleSignInView(APIView):
             return Response({"detail": "Token is required"}, status=400)
 
         try:
-            # Validate token
-            idinfo = id_token.verify_oauth2_token(
-                token, requests.Request(), settings.GOOGLE_CLIENT_ID
-            )
+            # Проверка токена
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), settings.GOOGLE_CLIENT_ID)
 
+            # Проверяем издателя токена
             if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
                 raise AuthenticationFailed("Invalid issuer")
 
+            # Получение данных пользователя
             email = idinfo.get('email')
             first_name = idinfo.get('given_name')
             last_name = idinfo.get('family_name')
 
-            # Check if user exists or create a new one
-            user, created = User.objects.get_or_create(
-                email=email,
-                defaults={
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "is_active": True,  # Automatically activate Google users
-                }
-            )
+            # Проверка существования пользователя
+            user, created = User.objects.get_or_create(email=email, defaults={
+                "first_name": first_name,
+                "last_name": last_name,
+                "is_active": True,  # Активируем пользователя автоматически
+            })
 
+            # Генерация JWT токена
             payload = {
                 "id": user.id,
                 "email": user.email,
@@ -188,4 +193,4 @@ class GoogleSignInView(APIView):
         except ValueError:
             return Response({"detail": "Invalid Google token!"}, status=401)
         except Exception as e:
-            return Response({"detail": f"An error occurred: {str(e)}"}, status=500)
+            return Response({"detail": f"Error: {str(e)}"}, status=500)

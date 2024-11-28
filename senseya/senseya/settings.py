@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework',
     'corsheaders',
-    'users'
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +125,8 @@ SIMPLE_JWT = {
 }
 GOOGLE_CLIENT_ID = "1002874216758-u2shjg2k4jcahfj3fgjpebnv21jo6i54.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
+
+
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_PORT = 587
