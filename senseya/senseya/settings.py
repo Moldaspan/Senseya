@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework_simplejwt',
     'rest_framework',
+    'django_filters',
     'corsheaders',
     'users',
+    'google_auth'
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'senseya',
         'USER': 'postgres',
-        'PASSWORD': 'e!_sUltan747',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -125,6 +127,7 @@ SIMPLE_JWT = {
 }
 GOOGLE_CLIENT_ID = "1002874216758-u2shjg2k4jcahfj3fgjpebnv21jo6i54.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
+GOOGLE_PROJECT_ID = "senseya"
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

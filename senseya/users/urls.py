@@ -3,7 +3,7 @@ from .views import (
     RegisterView, ActivateUserView, LoginView,
     ProfileView, ForgotPasswordView, ResetPasswordView, GoogleLoginView
 )
-
+app_name = 'users'
 urlpatterns = [
     path('register', RegisterView.as_view(), name='register'),
     path('activate/<str:token>', ActivateUserView.as_view(), name='activate'),
