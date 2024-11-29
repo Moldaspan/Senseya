@@ -81,7 +81,6 @@ class LoginView(APIView):
 
 
 class ProfileView(APIView):
-    # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
     def get(self, request):
         auth_header = request.headers.get('Authorization')
@@ -92,9 +91,10 @@ class ProfileView(APIView):
 
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
         user_id = payload.get('id')
+        user = User.objects.filter(id=user_id).first()
+        serializer = UserSerializer(user)
 
-        return Response({'message': 'Token decoded successfully.', 'user_id': 1})
-
+        return Response(serializer.data)
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
 
