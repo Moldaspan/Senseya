@@ -81,12 +81,12 @@ class GoogleRawLoginFlowService:
 
         return authorization_url, state
 
-    def get_tokens(self, *, code: str) -> GoogleAccessTokens:
+    def get_tokens(self, *, code: str, state:str) -> GoogleAccessTokens:
         redirect_uri = self._get_redirect_uri()
-
         # Reference: https://developers.google.com/identity/protocols/oauth2/web-server#obtainingaccesstokens
         data = {
             "code": code,
+            "state": state,
             "client_id": self._credentials.client_id,
             "client_secret": self._credentials.client_secret,
             "redirect_uri": redirect_uri,
@@ -94,7 +94,6 @@ class GoogleRawLoginFlowService:
         }
 
         response = requests.post(self.GOOGLE_ACCESS_TOKEN_OBTAIN_URL, data=data)
-
         if not response.ok:
             raise ApplicationError("Failed to obtain access token from Google.")
 
@@ -131,3 +130,4 @@ def google_raw_login_get_credentials() -> GoogleRawLoginCredentials:
     credentials = GoogleRawLoginCredentials(client_id=client_id, client_secret=client_secret, project_id=project_id)
 
     return credentials
+

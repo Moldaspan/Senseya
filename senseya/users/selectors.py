@@ -1,6 +1,7 @@
 from django.db.models.query import QuerySet
 
-from senseya.users.models import BaseUser
+from .filters import BaseUserFilter
+from .models import BaseUser
 
 
 def user_get_login_data(*, user: BaseUser):

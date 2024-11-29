@@ -1,6 +1,6 @@
 import django_filters
 
-from senseya.users.models import BaseUser
+from .models import BaseUser
 
 
 class BaseUserFilter(django_filters.FilterSet):
