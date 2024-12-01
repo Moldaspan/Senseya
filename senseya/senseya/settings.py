@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
@@ -122,12 +122,18 @@ REST_FRAMEWORK = {
     ),
 }
 
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': 'difj2034*@()98sd*@)(',
+
+    'AUTH_HEADER_TYPES': ('Bearer', 'Token', 'JWT'),
+    'USER_ID_FIELD': 'pk',
+    'USER_ID_CLAIM': 'user_id',
 }
 GOOGLE_CLIENT_ID = "1002874216758-u2shjg2k4jcahfj3fgjpebnv21jo6i54.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"

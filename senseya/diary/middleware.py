@@ -9,8 +9,6 @@ class DiaryLoggerMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-
-        # Сохраняем действия только для авторизованных пользователей
         if request.user.is_authenticated:
             DiaryEntry.objects.create(
                 user=request.user,
@@ -19,7 +17,7 @@ class DiaryLoggerMiddleware:
                 request_method=request.method,
                 endpoint=request.path,
                 request_data=self.get_request_data(request),
-                response_data=self.get_response_data(response)
+                response_data=self.get_response_data(response),
             )
         return response
 

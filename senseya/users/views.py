@@ -12,6 +12,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.id_token import verify_oauth2_token
 from .models import User
 from .serializers import UserSerializer
+from rest_framework_simplejwt import tokens
 
 
 class RegisterView(APIView):
@@ -69,30 +70,16 @@ class LoginView(APIView):
         if not user.is_active:
             raise AuthenticationFailed('Account is not activated!')
 
-        payload = {
-            'id': user.id,
-            'email': user.email,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat': datetime.datetime.utcnow(),
-        }
-        token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+        access = tokens.AccessToken.for_user(user)
 
-        return Response({'jwt': token})
+        return Response({"jwt": str(access)})
 
 
 class ProfileView(APIView):
-    permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return Response({'error': 'Token is missing or invalid.'}, status=401)
-
-        token = auth_header.split(' ')[1]
-
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-        user_id = payload.get('id')
-        user = User.objects.filter(id=user_id).first()
-        serializer = UserSerializer(user)
+        serializer = UserSerializer(request.user)
 
         return Response(serializer.data)
 class ForgotPasswordView(APIView):

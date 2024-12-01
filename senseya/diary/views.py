@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from .models import DiaryEntry
 
 
@@ -17,6 +17,7 @@ class DiaryListView(APIView):
                 "endpoint": entry.endpoint,
                 "request_data": entry.request_data,
                 "response_data": entry.response_data,
+                "user_query": entry.user_query,
             }
             for entry in entries
         ]
