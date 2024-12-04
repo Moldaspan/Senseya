@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/google/', include(('google_auth.urls', 'google_auth'), namespace='google-auth')),
     path('api/diary/', include('diary.urls')),
+    path('api/chat/', include('chat.urls')),
 ]

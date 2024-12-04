@@ -40,7 +40,7 @@ class RegisterView(APIView):
 
 
 class ActivateUserView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, token):
         try:
@@ -138,46 +138,3 @@ class ResetPasswordView(APIView):
             return Response({'message': 'Invalid token.'}, status=400)
 
 
-class GoogleLoginView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        token = request.data.get("token")
-        if not token:
-            return Response({"detail": "Token is required"}, status=400)
-
-        try:
-            # Проверка токена
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), settings.GOOGLE_CLIENT_ID)
-
-            # Проверяем издателя токена
-            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-                raise AuthenticationFailed("Invalid issuer")
-
-            # Получение данных пользователя
-            email = idinfo.get('email')
-            first_name = idinfo.get('given_name')
-            last_name = idinfo.get('family_name')
-
-            # Проверка существования пользователя
-            user, created = User.objects.get_or_create(email=email, defaults={
-                "first_name": first_name,
-                "last_name": last_name,
-                "is_active": True,  # Активируем пользователя автоматически
-            })
-
-            # Генерация JWT токена
-            payload = {
-                "id": user.id,
-                "email": user.email,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-                "iat": datetime.datetime.utcnow(),
-            }
-            jwt_token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
-
-            return Response({"jwt": jwt_token, "created": created})
-
-        except ValueError:
-            return Response({"detail": "Invalid Google token!"}, status=401)
-        except Exception as e:
-            return Response({"detail": f"Error: {str(e)}"}, status=500)

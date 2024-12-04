@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class DiaryEntry(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diary_entries')
     action = models.CharField(max_length=255)  # Описание действия

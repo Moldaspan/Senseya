@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'google_auth',
-    'diary'
+    'diary',
+    'chat',
 ]
 
 MIDDLEWARE = [
