@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -5,6 +7,7 @@ User = get_user_model()
 
 
 class DiaryEntry(models.Model):
+    id = models.AutoField(primary_key=True)  # Числовой ID
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diary_entries')
     action = models.CharField(max_length=255)  # Описание действия
     timestamp = models.DateTimeField(auto_now_add=True)  # Время действия

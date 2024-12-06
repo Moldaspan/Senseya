@@ -29,32 +29,25 @@ class DeleteDiaryEntriesView(APIView):
     permission_classes = [IsAuthenticated]
 
     def delete(self, request):
-        # Получаем параметры фильтрации из запроса
-        action = request.data.get("action")  # Удаление по типу действия
-        query_text = request.data.get("query")  # Удаление по тексту запроса
-        endpoint = request.data.get("endpoint")  # Удаление по endpoint
+        # Получаем список ID для удаления
+        entry_ids = request.data.get("entry_ids", [])
 
-        # Проверяем, что хотя бы один фильтр указан
-        if not any([action, query_text, endpoint]):
-            return Response(
-                {"error": "Provide at least one filter: action, query, or endpoint."},
-                status=400,
-            )
+        if not entry_ids:
+            return Response({"error": "Provide at least one entry ID to delete."}, status=400)
 
-        # Фильтруем записи по указанным параметрам
-        entries = DiaryEntry.objects.filter(user=request.user)
-        if action:
-            entries = entries.filter(action=action)
-        if query_text:
-            entries = entries.filter(request_data__query=query_text)
-        if endpoint:
-            entries = entries.filter(endpoint=endpoint)
+        # Проверяем, что все ID являются целыми числами
+        try:
+            entry_ids = [int(entry_id) for entry_id in entry_ids]
+        except ValueError:
+            return Response({"error": "All entry IDs must be integers."}, status=400)
 
-        # Удаляем записи
-        count = entries.count()
-        entries.delete()
+        # Фильтруем записи для текущего пользователя по переданным ID
+        entries_to_delete = DiaryEntry.objects.filter(user=request.user, id__in=entry_ids)
 
-        return Response(
-            {"message": f"{count} diary entries deleted successfully."},
-            status=200,
-        )
+        if not entries_to_delete.exists():
+            return Response({"error": "No matching diary entries found for the provided IDs."}, status=404)
+
+        # Удаляем записи и возвращаем количество удаленных записей
+        deleted_count = entries_to_delete.delete()[0]
+
+        return Response({"message": f"{deleted_count} diary entries deleted successfully."}, status=200)
